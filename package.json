@@ -1,0 +1,10 @@
+{
+  "name": "antigravity-demo",
+  "version": "1.0.0",
+  "description": "AI Incident Manager - Fullstack",
+  "scripts": {
+    "dev:backend": "cd backend/backend && npm run dev",
+    "dev:frontend": "cd frontend/frontend && npm run dev",
+    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  }
+}

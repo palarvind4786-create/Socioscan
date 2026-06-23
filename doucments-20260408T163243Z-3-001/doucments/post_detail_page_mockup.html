@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Detail | AI Incident Manager</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --bg-dark: #0f1117;
+        --card-bg: #1a1d27;
+        --border: #2e3148;
+        --text-primary: #e8e9f0;
+        --text-muted: #6b6f85;
+        --accent: #4f46e5;
+        --critical: #ef4444;
+        --success: #22c55e;
+      }
+      body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Inter', sans-serif; overflow: hidden; }
+      #pd-root { display: flex; height: 100vh; width: 100vw; }
+
+      /* Unified Sidebar Unification */
+      .sidebar { width: 240px; background: #13151f; border-right: 1px solid #1e2133; display: flex; flex-direction: column; padding: 1.5rem 0; flex-shrink: 0; height: 100vh; position: sticky; top: 0; }
+      .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 0 1.5rem 1.75rem; border-bottom: 1px solid #1e2133; margin-bottom: 1rem; }
+      .sidebar-logo-icon { width: 32px; height: 32px; background: #4f46e5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+      .sidebar-logo-text { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; letter-spacing: 0.5px; }
+      .nav-section { font-size: 10px; color: #3d4058; padding: 1.25rem 1.5rem 0.5rem; letter-spacing: 0.1em; font-weight: 800; text-transform: uppercase; }
+      .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 1.5rem; color: #6b6f85; cursor: pointer; transition: all 0.2s; text-decoration: none; border-right: 3px solid transparent; }
+      .nav-item:hover { color: #fff; background: #1a1d2e; }
+      .nav-item.active { color: #a5b4fc; background: #1a1d2e; border-right-color: #4f46e5; }
+      .nav-item span:first-child { font-size: 16px; width: 20px; text-align: center; }
+      .sidebar-footer { margin-top: auto; padding: 1.25rem; border-top: 1px solid #1e2133; }
+      .user-card { display: flex; align-items: center; gap: 10px; }
+      .user-avatar { width: 32px; height: 32px; background: #312e81; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #a5b4fc; border: 1px solid #1e2133; }
+      .user-info { display: flex; flex-direction: column; }
+      .user-name { font-size: 12px; font-weight: 600; color: #e8e9f0; line-height: 1.2; }
+      .user-role { font-size: 10px; color: #6b6f85; }
+
+      /* RESTORED MAIN STYLES */
+      .pd-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+      .pd-topbar { background: #13151f; border-bottom: 1px solid #1e2133; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+      .pd-breadcrumb { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 12px; }
+      .pd-topbar-id { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+
+      .pd-floating-nav { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: rgba(26, 29, 39, 0.85); backdrop-filter: blur(12px); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 100; }
+      .pd-triage-btn { padding: 8px 16px; border-radius: 40px; border: none; background: #1a1d2e; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+      .pd-triage-btn.next { background: var(--accent); }
+
+      .pd-content { padding: 2rem; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; max-width: 1400px; margin-bottom: 6rem; }
+      .pd-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+      .pd-card-header { margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+      .pd-card-title { font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+
+      .pd-post-hero { font-size: 18px; color: #fff; line-height: 1.6; padding: 1.5rem; background: #0f1117; border-radius: 10px; border-left: 5px solid var(--critical); margin-bottom: 1.5rem; }
+      
+      /* User Card RESTORED to Grid */
+      .pd-author-strip { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px; border-radius: 10px; display: grid; grid-template-columns: auto 1fr; gap: 14px; margin-bottom: 1.5rem; }
+      .pd-author-avatar { width: 42px; height: 42px; border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; position: relative; }
+      .pd-author-info { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+      .pd-author-name { font-weight: 700; color: #fff; font-size: 13px; }
+      .pd-author-meta { font-size: 11px; color: var(--text-muted); }
+
+      /* Logic Trace RESTORED */
+      .logic-trace { position: relative; padding-left: 24px; }
+      .logic-trace:before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 1px; background: var(--border); }
+      .logic-node { position: relative; margin-bottom: 1.5rem; }
+      .logic-step-circle { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg-dark); border: 2px solid var(--accent); }
+      .logic-node.active .logic-step-circle { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+      .logic-node.success .logic-step-circle { border-color: var(--success); background: var(--success); }
+      .logic-header { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+      .logic-body { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div id="pd-root">
+  <!-- Unified Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">✨</div>
+      <div class="sidebar-logo-text">AI INCIDENT<br>MANAGER</div>
+    </div>
+    
+    <div class="nav-section">OPERATIONS</div>
+    <a href="dashboard_mockup.html" class="nav-item">
+      <span>📊</span>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a href="upload_analyse_page_mockup.html" class="nav-item">
+      <span>📥</span>
+      <span class="nav-label">Upload & Analyze</span>
+    </a>
+    <a href="all_posts_page_mockup.html" class="nav-item active">
+      <span>📑</span>
+      <span class="nav-label">All Records</span>
+    </a>
+
+    <div class="nav-section">CHANNELS</div>
+    <div class="nav-item"><span>🐦</span><span>Twitter Feed</span></div>
+    <div class="nav-item"><span>💬</span><span>Direct Ingest</span></div>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">AP</div>
+        <div class="user-info">
+          <div class="user-name">Arvind Pal</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main View RESTORED Content -->
+  <main class="pd-main">
+    <header class="pd-topbar">
+      <div class="pd-breadcrumb">Dashboards / Archive / <span style="color:#fff">Incident Detail</span></div>
+      <div class="pd-topbar-id">VERDICT: CRITICAL</div>
+    </header>
+
+    <!-- Floating Triange Dock -->
+    <div class="pd-floating-nav">
+      <div style="font-size:11px; color:var(--text-muted); padding-right:12px; border-right:1px solid var(--border)"><strong>14</strong> in queue</div>
+      <button class="pd-triage-btn">← Previous</button>
+      <button class="pd-triage-btn next">Next Incident →</button>
+    </div>
+
+    <div class="pd-content">
+      <div class="pd-left">
+        <div class="pd-card">
+          <div class="pd-card-header"><div class="pd-card-title">Analysis Subject</div></div>
+          <div class="pd-post-hero">
+            "I can't take this anymore, no one ever listens to what is happening per my situation. Every single day I feel more hopeless and nobody seems to care at all."
+          </div>
+          
+          <!-- User Detail RESTORED -->
+          <div class="pd-author-strip">
+            <div class="pd-author-avatar">
+               AK
+               <div style="position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; background: var(--success); border-radius: 50%; border: 2px solid var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 8px;">✔️</div>
+            </div>
+            <div class="pd-author-info">
+              <div style="display:flex; flex-direction:column; gap:4px; border-right: 1px solid var(--border); padding-right: 12px;">
+                <div style="display:flex; align-items:center; gap:8px"><span class="pd-author-name">Ankit Kumar</span><span style="font-size:8px; background:rgba(29,161,242,0.1); color:#1da1f2; padding:1px 6px; border-radius:4px">TWITTER</span></div>
+                <a href="#" style="color:var(--accent); font-size:10px; text-decoration:none; font-weight:600">🔍 View Original Feed</a>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px; padding-left: 8px;">
+                <span class="pd-author-meta" style="color:var(--success); font-weight:700;">📍 New Delhi, IN</span>
+                <span class="pd-author-meta">📅 3 Previous • Level 2</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#2d1a1a; border:1px solid #ef444433; padding:12px 1.25rem; border-radius:10px; display:flex; align-items:center; gap:1.5rem; margin-bottom: 1.5rem;">
+            <div style="font-size:32px; font-weight:700; color:var(--critical)">94</div>
+            <div>
+              <div style="color:var(--critical); font-weight:700; font-size:14px; text-transform:uppercase">Critical Severity</div>
+              <div style="font-size:11px; color:#fca5a5">Urgent intervention recommended by AI Engine.</div>
+            </div>
+          </div>
+
+          <!-- New Triage Actions (Interchanged) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem;">
+            <button style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-transform: uppercase;">Resolve Incident</button>
+            <button style="background: #f59e0b; border: none; color: #fff; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-transform: uppercase;">Escalate to Human</button>
+          </div>
+        </div>
+
+        <div class="pd-card" style="margin-top: 1.5rem;">
+          <div class="pd-card-header">
+            <div class="pd-card-title">RESOLUTION AUDIT LOG</div>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <textarea class="ua-textarea" style="min-height: 100px; background: #0f1117; border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: #fff; font-size: 13px; width: 100%; resize: none;" placeholder="Type your action report here (e.g. 'Contacted local helpline', 'Forwarded to NGO'...)"></textarea>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 11px; color: var(--text-muted);">Notes are saved instantly to history.</div>
+            <button class="btn-primary" style="width: auto; padding: 8px 24px; margin-top: 0; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Save Log</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-right">
+        <div class="pd-card">
+          <div class="pd-card-header"><div class="pd-card-title">AI Decision Trace</div></div>
+          <div class="logic-trace">
+            <div class="logic-node success">
+              <div class="logic-step-circle"></div>
+              <div class="logic-header">01. Neural Pre-Processing</div>
+              <div class="logic-body">Normalizing raw content into BERT-based semantic embeddings to filter out linguistic noise and prepare for deep neural parsing.</div>
+            </div>
+            <div class="logic-node active">
+              <div class="logic-step-circle"></div>
+              <div class="logic-header">02. Engine A: Topic Detection</div>
+              <div class="logic-body">Cross-referencing embeddings against high-risk latent clusters; verified 92% match with "Critical Distress" sub-domains.</div>
+            </div>
+            <div class="logic-node active">
+              <div class="logic-step-circle"></div>
+              <div class="logic-header">03. Engine B: Sentiment Intensity</div>
+              <div class="logic-body">Measuring emotional valence and psychological arousal. Identified 0.94 negativity, exceeding safe platform arousal thresholds.</div>
+            </div>
+            <div class="logic-node success">
+              <div class="logic-step-circle"></div>
+              <div class="logic-header">04. Sarcasm & Nuance Filter</div>
+              <div class="logic-body">Applying zero-shot filtering to detect irony or hyperbole. Confirmed subject intent as genuine distress with 98% confidence.</div>
+            </div>
+            <div class="logic-node active">
+              <div class="logic-step-circle" style="background:var(--critical); border-color:var(--critical)"></div>
+              <div class="logic-header" style="color:var(--critical)">05. Aggregated Severity Verdict</div>
+              <div class="logic-body">Final weighting of categorical risk vs. emotional intensity to reach a verdict of 94/100, triggering immediate priority triage.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

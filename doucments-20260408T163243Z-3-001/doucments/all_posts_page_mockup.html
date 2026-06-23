@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Records | AI Incident Manager</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --bg-dark: #0f1117;
+        --card-bg: #1a1d27;
+        --border: #2e3148;
+        --text-primary: #e8e9f0;
+        --text-muted: #6b6f85;
+        --accent: #4f46e5;
+        --critical: #ef4444;
+        --success: #22c55e;
+      }
+      body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Inter', sans-serif; overflow: hidden; }
+      #ap-root { display: flex; height: 100vh; width: 100vw; }
+
+      /* Unified Sidebar Unification */
+      .sidebar { width: 240px; background: #13151f; border-right: 1px solid #1e2133; display: flex; flex-direction: column; padding: 1.5rem 0; flex-shrink: 0; height: 100vh; position: sticky; top: 0; }
+      .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 0 1.5rem 1.75rem; border-bottom: 1px solid #1e2133; margin-bottom: 1rem; }
+      .sidebar-logo-icon { width: 32px; height: 32px; background: #4f46e5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+      .sidebar-logo-text { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; letter-spacing: 0.5px; }
+      .nav-section { font-size: 10px; color: #3d4058; padding: 1.25rem 1.5rem 0.5rem; letter-spacing: 0.1em; font-weight: 800; text-transform: uppercase; }
+      .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 1.5rem; color: #6b6f85; cursor: pointer; transition: all 0.2s; text-decoration: none; border-right: 3px solid transparent; }
+      .nav-item:hover { color: #fff; background: #1a1d2e; }
+      .nav-item.active { color: #a5b4fc; background: #1a1d2e; border-right-color: #4f46e5; }
+      .nav-item span:first-child { font-size: 16px; width: 20px; text-align: center; }
+      .sidebar-footer { margin-top: auto; padding: 1.25rem; border-top: 1px solid #1e2133; }
+      .user-card { display: flex; align-items: center; gap: 10px; }
+      .user-avatar { width: 32px; height: 32px; background: #312e81; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #a5b4fc; border: 1px solid #1e2133; }
+      .user-name { font-size: 12px; font-weight: 600; color: #e8e9f0; line-height: 1.2; }
+      .user-role { font-size: 10px; color: #6b6f85; }
+
+      /* RESTORED MAIN STYLES */
+      .ap-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+      .ap-topbar { background: #13151f; border-bottom: 1px solid #1e2133; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+      .ap-topbar-title { font-size: 15px; font-weight: 700; color: #fff; }
+      .ap-content { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; max-width: 1400px; }
+      
+      .filter-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; gap: 12px; align-items: center; }
+      .filter-input { background: #0f1117; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: #fff; font-size: 13px; flex: 1; outline: none; }
+      .filter-select { background: #0f1117; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text-muted); font-size: 13px; }
+
+      .table-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+      .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+      .data-table th { background: #13151f; padding: 14px 18px; font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+      .data-table td { padding: 16px 18px; font-size: 13px; color: #c7c9d9; border-bottom: 1px solid #1e2133; }
+      .badge { padding: 4px 10px; border-radius: 40px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+      .badge-crit { background: rgba(239, 68, 68, 0.1); color: var(--critical); border: 1px solid rgba(239, 68, 68, 0.2); }
+    </style>
+</head>
+<body>
+
+<div id="ap-root">
+  <!-- Unified Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">✨</div>
+      <div class="sidebar-logo-text">AI INCIDENT<br>MANAGER</div>
+    </div>
+    
+    <div class="nav-section">OPERATIONS</div>
+    <a href="dashboard_mockup.html" class="nav-item">
+      <span>📊</span>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a href="upload_analyse_page_mockup.html" class="nav-item">
+      <span>📥</span>
+      <span class="nav-label">Upload & Analyze</span>
+    </a>
+    <a href="all_posts_page_mockup.html" class="nav-item active">
+      <span>📑</span>
+      <span class="nav-label">All Records</span>
+    </a>
+
+    <div class="nav-section">CHANNELS</div>
+    <div class="nav-item"><span>🐦</span><span>Twitter Feed</span></div>
+    <div class="nav-item"><span>💬</span><span>Direct Ingest</span></div>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">AP</div>
+        <div class="user-info">
+          <div class="user-name">Arvind Pal</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main View RESTORED -->
+  <main class="ap-main">
+    <header class="ap-topbar">
+      <div class="ap-topbar-title">Central Record Archive</div>
+      <div style="font-size: 11px; color:var(--text-muted)">12,842 Total Records Syncing</div>
+    </header>
+
+    <div class="ap-content">
+      <div class="filter-bar">
+        <input type="text" class="filter-input" placeholder="Search content or ID...">
+        <select class="filter-select"><option>All Severities</option><option>Critical</option></select>
+        <select class="filter-select"><option>All Categories</option></select>
+        <select class="filter-select"><option>All Locations</option><option>Delhi/NCR</option><option>Mumbai</option></select>
+        <select class="filter-select"><option>All Time</option><option>Last 24h</option><option>Last 7 Days</option></select>
+        <button style="background:var(--accent); border:none; color:#fff; padding:10px 20px; border-radius:8px; font-weight:700; cursor:pointer">Run Search</button>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Incident Content</th>
+              <th>Category</th>
+              <th>Severity</th>
+              <th>AI Score</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Apr 02, 10:42 AM</td>
+              <td>"I can't take this anymore, no one listens..."</td>
+              <td>Psychological</td>
+              <td><span class="badge badge-crit">CRITICAL</span></td>
+              <td style="font-weight:700">94.8</td>
+              <td><a href="#" style="color:var(--accent); text-decoration:none; font-weight:700; font-size:12px">View Details</a></td>
+            </tr>
+            <tr>
+              <td>Apr 02, 10:15 AM</td>
+              <td>"The roads near east gate are flooded..."</td>
+              <td>Civic Issue</td>
+              <td><span style="color:var(--text-muted); font-size:10px; font-weight:700">LOW</span></td>
+              <td style="font-weight:700">12.4</td>
+              <td><a href="#" style="color:var(--accent); text-decoration:none; font-weight:700; font-size:12px">View Details</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+### Health Check Server
+GET http://localhost:5000/
+
+### ==========================================
+### POSTS ROUTES
+### ==========================================
+
+### 1. Analyze and save a new post (Emergency Example)
+POST http://localhost:5000/api/posts/analyze
+Content-Type: application/json
+
+{
+    "text": "URGENT: Major fire outbreak at the downtown warehouse! People are trapped!",
+    "source": "twitter"
+}
+
+### 1b. Analyze and save a new post (Non-Emergency Example)
+POST http://localhost:5000/api/posts/analyze
+Content-Type: application/json
+
+{
+    "text": "The pothole on 5th avenue is really annoying. Someone should fix it eventually.",
+    "source": "facebook"
+}
+
+### 2. Get all posts
+GET http://localhost:5000/api/posts
+
+### 3. Get posts filtered by severity and topic
+GET http://localhost:5000/api/posts?severity=Critical&topic=Public%20Safety
+
+### 4. Get only CRITICAL posts (dedicated route)
+GET http://localhost:5000/api/posts/critical
+
+### 5. Mark a post as resolved
+# -> Note: Replace 'YOUR_DOCUMENT_ID_HERE' with an actual _id from the GET /api/posts request
+PATCH http://localhost:5000/api/posts/YOUR_DOCUMENT_ID_HERE/resolve
+Content-Type: application/json
+
+{
+    "adminNotes": "Forwarded this issue to the local authorities for immediate action."
+}
+
+### ==========================================
+### AUTHENTICATION ROUTES
+### ==========================================
+
+### 6. Register First Admin
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Admin Tester",
+    "email": "admin@example.com",
+    "password": "Password123"
+}
+
+### 7. Login to get JWT Token
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "Password123"
+}
+
+### ==========================================
+### BULK DATASET UPLOAD
+### ==========================================
+
+### 8. Upload a batch of 5 posts
+### Make sure to copy the token from the Login request and replace YOUR_TOKEN_HERE below!
+POST http://localhost:5000/api/upload/dataset
+Content-Type: application/json
+Authorization: Bearer YOUR_TOKEN_HERE
+
+{
+    "dataset": [
+        {
+            "text": "The downtown intersection has a completely busted traffic light. It's been broken for 3 days.",
+            "source": "twitter"
+        },
+        {
+            "text": "I am so completely exhausted with everything, I don't see the point in living anymore.",
+            "source": "facebook"
+        },
+        {
+            "text": "There's a massive car crash on I-95, multiple lanes are completely blocked!",
+            "source": "reddit"
+        },
+        {
+            "text": "Bro this internet lag is unbearable, I literally want to murder my router.",
+            "source": "twitter"
+        },
+        {
+            "text": "The new park that the city built is absolutely beautiful! Having a great day here.",
+            "source": "instagram"
+        }
+    ]
+}
+
+### ==========================================
+### DASHBOARD & ANALYSIS ROUTES
+### ==========================================
+
+### 9. Get aggregate Dashboard Stats
+GET http://localhost:5000/api/dashboard/stats
+
+### 10. Analysis Placeholder route
+GET http://localhost:5000/api/analysis
